@@ -6,13 +6,13 @@ $(function () {
         vertical: true,
     }
 
-    const adjustTopTitleContainerHeight = () => {
+    const adjustTitleContainerHeight = () => {
         $('.title').css('height', 'auto')
-        const height = maxHeightOfTopTitle()
+        const height = maxHeightOfTitle()
         $('.title').css('height', parseInt(height, 10) + 'px')
     }
 
-    const maxHeightOfTopTitle = () => {
+    const maxHeightOfTitle = () => {
         const titles = $('.title')
         let max = 0
         for (const title of titles) {
@@ -26,12 +26,12 @@ $(function () {
     }
 
     slicker.on('beforeChange', function (_, slick, _, _) {
-        adjustTopTitleContainerHeight()
+        adjustTitleContainerHeight()
         slicker.slick('setPosition')
     })
 
     $(document).ready(function () {
-        adjustTopTitleContainerHeight()
+        adjustTitleContainerHeight()
         slicker.slick(slickOpts)
     })
 
