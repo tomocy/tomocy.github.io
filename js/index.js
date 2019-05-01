@@ -58,4 +58,9 @@ $(function () {
     slicker.click(function () {
         slicker.slick('slickNext')
     })
+
+    // disable scroll also in iOS safari
+    $(window).on('touchmove', function () {
+        e.preventDefault()
+    })
 })
