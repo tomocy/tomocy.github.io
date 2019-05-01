@@ -25,12 +25,23 @@ $(function () {
         return max
     }
 
+    const decideBGImageOnWindowRatio = () => {
+        const [width, height] = [$(window).innerWidth(), $(window).innerHeight()]
+        const img = $('#aiueo')
+        if (height < width) {
+            img.removeClass('img-higher').addClass('img-wider')
+        } else {
+            img.removeClass('img-wider').addClass('img-higher')
+        }
+    }
+
     slicker.on('beforeChange', function (_, slick, _, _) {
         adjustTitleContainerHeight()
         slicker.slick('setPosition')
     })
 
     $(document).ready(function () {
+        decideBGImageOnWindowRatio()
         adjustTitleContainerHeight()
         slicker.slick(slickOpts)
     })
@@ -39,6 +50,7 @@ $(function () {
     $(window).resize(function () {
         clearTimeout(onResizeCompleted)
         onResizeCompleted = setTimeout(function () {
+            decideBGImageOnWindowRatio()
             slicker.slick('slickNext')
         }, 200)
     })
