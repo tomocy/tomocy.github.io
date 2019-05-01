@@ -27,7 +27,7 @@ $(function () {
 
     const decideBGImageOnWindowRatio = () => {
         const [width, height] = [$(window).innerWidth(), $(window).innerHeight()]
-        const img = $('#aiueo')
+        const img = $('#img')
         if (height < width) {
             img.removeClass('img-higher').addClass('img-wider')
         } else {
