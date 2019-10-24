@@ -30,7 +30,6 @@ class Carousel {
     slideNextOnClick() {
         this.slider.onClick(() => {
             this.slideNext()
-            console.log('slide next on click')
         })
     }
 }
