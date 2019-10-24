@@ -1,5 +1,5 @@
 $(function () {
-    const slicker = $('#title-container')
+    const titleContainer = $('#title-container')
     const slickOpts = {
         arrows: false,
         autoplay: true,
@@ -35,15 +35,15 @@ $(function () {
         }
     }
 
-    slicker.on('beforeChange', function (_, slick, _, _) {
+    titleContainer.on('beforeChange', function (_, slick, _, _) {
         adjustTitleContainerHeight()
-        slicker.slick('setPosition')
+        titleContainer.slick('setPosition')
     })
 
     $(document).ready(function () {
         decideBGImageOnWindowRatio()
         adjustTitleContainerHeight()
-        slicker.slick(slickOpts)
+        titleContainer.slick(slickOpts)
     })
 
     let onResizeCompleted;
@@ -51,12 +51,12 @@ $(function () {
         clearTimeout(onResizeCompleted)
         onResizeCompleted = setTimeout(function () {
             decideBGImageOnWindowRatio()
-            slicker.slick('slickNext')
+            titleContainer.slick('slickNext')
         }, 200)
     })
 
-    slicker.click(function () {
-        slicker.slick('slickNext')
+    titleContainer.click(function () {
+        titleContainer.slick('slickNext')
     })
 
     // disable scroll also in iOS safari
