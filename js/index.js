@@ -1,22 +1,80 @@
 $(function () {
-    const titleContainer = $('#title-container')
-    const slickOpts = {
+    const bgImg = new BGImage('#img')
+    const titleCarousel = new Carousel(new Slider(new Slicker('#title-container', '.title', {
         arrows: false,
         autoplay: true,
         vertical: true,
+    })))
+
+    titleCarousel.slideNextOnClick()
+    bgImg.decideOnReady()
+    bgImg.decideOnResize(function() {
+        titleCarousel.slideNext()
+    })
+
+    // disable scroll also in iOS safari
+    $(window).on('touchmove', function () {
+        e.preventDefault()
+    })
+})
+
+class Carousel {
+    constructor(slider) {
+        this.slider = slider
     }
 
-    const adjustTitleContainerHeight = () => {
-        $('.title').css('height', 'auto')
-        const height = maxHeightOfTitle()
-        $('.title').css('height', parseInt(height, 10) + 'px')
+    slideNext() {
+        this.slider.slideNext()
     }
 
-    const maxHeightOfTitle = () => {
-        const titles = $('.title')
+    slideNextOnClick() {
+        this.slider.onClick(() => {
+            this.slideNext()
+            console.log('slide next on click')
+        })
+    }
+}
+
+class Slider {
+    constructor(slider) {
+        this.slider = slider
+    }
+
+    slideNext() {
+        this.slider.slideNext()
+    }
+
+    refresh() {
+        this.slider.refres()
+    }
+
+    current() {
+        return this.slider.current()
+    }
+
+    onClick(f) {
+        this.slider.onClick(f)
+    }
+}
+
+class Slicker {
+    constructor(name, itemName, opts) {
+        this.items = $(itemName)
+        this.adjustHeight()
+
+        this.target = $(name).slick(opts)
+    }
+
+    adjustHeight() {
+        this.items.css('height', 'auto')
+        const height = this.maxHeightOfItem()
+        this.items.css('height', parseInt(height, 10) + 'px')
+    }
+
+    maxHeightOfItem() {
         let max = 0
-        for (const title of titles) {
-            const height = $(title).height()
+        for (const item of this.items) {
+            const height = $(item).height()
             if (max < height) {
                 max = height
             }
@@ -25,79 +83,53 @@ $(function () {
         return max
     }
 
-    const decideBGImageOnWindowRatio = () => {
+    slideNext() {
+        this.target.slick('slickNext')
+    }
+
+    refresh() {
+        this.target.slick('setPosition')
+    }
+
+    current() {
+        return $('.slick-slide.slick-current')
+    }
+
+    onClick(f) {
+        this.target.click(f)
+    }
+}
+
+class BGImage {
+    constructor(name) {
+        this.target = $(name)
+    }
+
+    decideOnReady(f = () => {}) {
+        $(document).ready(() => {
+            this.decide()
+            f()
+        })
+    }
+
+    decideOnResize(f = () => {}) {
+        let onCompleted;
+        $(window).resize(() => {
+            clearTimeout(onCompleted)
+            onCompleted = setTimeout(() => {
+                this.decide()
+                f()
+            }, 200)
+        })
+    }
+
+    decide() {
         const [width, height] = [$(window).innerWidth(), $(window).innerHeight()]
-        const img = $('#img')
         if (height < width) {
-            img.removeClass('img-higher').addClass('img-wider')
-        } else {
-            img.removeClass('img-wider').addClass('img-higher')
+            this.target.removeClass('img-higher').addClass('img-wider')
+            return
         }
+
+        this.target.removeClass('img-wider').addClass('img-higher')
     }
-
-    const noContentHandler = {
-        handle: function(title) {
-            this.title = title
-            this.originalHTML = title.html()
-            title.html('204 Sorry for<br>No Content website')
-            this.didHandle = true
-        },
-        restore: function() {
-            this.title.html(this.originalHTML)
-            this.didHandle = false
-        },
-    }
-
-    const currentTitle = () => {
-        return $('.title.slick-current')
-    }
-
-    const titleClickCounter = {
-        cnt: 0,
-        count: function() {
-            this.cnt++
-        },
-        reset: function() {
-            this.cnt = 0
-        },
-    }
-
-    titleContainer.on('beforeChange', function (_, slick, _, _) {
-        adjustTitleContainerHeight()
-        titleContainer.slick('setPosition')
-        if (noContentHandler.didHandle) {
-            noContentHandler.restore()
-        }
-    })
-
-    $(document).ready(function () {
-        decideBGImageOnWindowRatio()
-        adjustTitleContainerHeight()
-        titleContainer.slick(slickOpts)
-    })
-
-    let onResizeCompleted;
-    $(window).resize(function () {
-        clearTimeout(onResizeCompleted)
-        onResizeCompleted = setTimeout(function () {
-            decideBGImageOnWindowRatio()
-            titleContainer.slick('slickNext')
-        }, 200)
-    })
-
-    titleContainer.click(function () {
-        titleContainer.slick('slickNext')
-        console.log(titleClickCounter.cnt)
-        titleClickCounter.count()
-        if (5 <= titleClickCounter.cnt) {
-            const title = currentTitle()
-            NoContentHandler.handle(title)
-            titleClickCounter.reset()
-        }
-    })
-
-    // disable scroll also in iOS safari
-    $(window).on('touchmove', function () {
-        e.preventDefault()
-    })
-})
+}
