@@ -6,8 +6,20 @@ $(function () {
         vertical: true,
     })))
 
+    let titleClickedCnt = 0
+    const noContentEvent = new NoContentEvent()
+
+    titleCarousel.beforeChange(() => {
+        if (noContentEvent.isTriggered) {
+            noContentEvent.restore()
+        }
+    })
     titleCarousel.onClick(() => {
+        titleClickedCnt++
         titleCarousel.slideNext()
+        if (titleClickedCnt % 5 == 0) {
+            noContentEvent.trigger(titleCarousel.current())
+        }
     })
     $(document).ready(() => {
         bgImg.decide()
@@ -39,7 +51,15 @@ class Carousel {
         this.slider.refresh()
     }
 
-    onClick(f = () => {}) {
+    current() {
+        return this.slider.current()
+    }
+
+    beforeChange(f) {
+        this.slider.beforeChange(f)
+    }
+
+    onClick(f) {
         this.slider.onClick(f)
     }
 }
@@ -59,6 +79,10 @@ class Slider {
 
     current() {
         return this.slider.current()
+    }
+
+    beforeChange(f) {
+        this.slider.beforeChange(f)
     }
 
     onClick(f) {
@@ -106,6 +130,10 @@ class Slicker {
         return $('.slick-slide.slick-current')
     }
 
+    beforeChange(f) {
+        this.target.on('beforeChange', f)
+    }
+
     onClick(f) {
         this.target.click(f)
     }
@@ -128,5 +156,35 @@ class BGImage {
 
     target() {
         return $(this.name)
+    }
+}
+
+class NoContentEvent {
+    constructor() {
+        this.store(null)
+        this.isTriggered = false
+    }
+
+    trigger(title) {
+        this.store(title)
+
+        this.title.html('204 <br>Sorry for <br class="sp-only">No Content')
+        this.isTriggered = true
+    }
+
+    restore() {
+        this.title.html(this.originalTitle.html())
+        this.isTriggered = false
+
+        this.drop()
+    }
+
+    drop() {
+        this.store(null)
+    }
+
+    store(title) {
+        this.title = title
+        this.originalTitle = (title != null) ? title.clone() : null
     }
 }
