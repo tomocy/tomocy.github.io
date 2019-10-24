@@ -35,9 +35,39 @@ $(function () {
         }
     }
 
+    const noContentHandler = {
+        handle: function(title) {
+            this.title = title
+            this.originalHTML = title.html()
+            title.html('204 Sorry for<br>No Content website')
+            this.didHandle = true
+        },
+        restore: function() {
+            this.title.html(this.originalHTML)
+            this.didHandle = false
+        },
+    }
+
+    const currentTitle = () => {
+        return $('.title.slick-current')
+    }
+
+    const titleClickCounter = {
+        cnt: 0,
+        count: function() {
+            this.cnt++
+        },
+        reset: function() {
+            this.cnt = 0
+        },
+    }
+
     titleContainer.on('beforeChange', function (_, slick, _, _) {
         adjustTitleContainerHeight()
         titleContainer.slick('setPosition')
+        if (noContentHandler.didHandle) {
+            noContentHandler.restore()
+        }
     })
 
     $(document).ready(function () {
@@ -57,6 +87,13 @@ $(function () {
 
     titleContainer.click(function () {
         titleContainer.slick('slickNext')
+        console.log(titleClickCounter.cnt)
+        titleClickCounter.count()
+        if (5 <= titleClickCounter.cnt) {
+            const title = currentTitle()
+            NoContentHandler.handle(title)
+            titleClickCounter.reset()
+        }
     })
 
     // disable scroll also in iOS safari
