@@ -6,7 +6,9 @@ $(function () {
         vertical: true,
     })
     const titleCarousel = new Carousel(new Slider(slicker))
-    const noContentEvent = new TitleEvent('204 <br>Sorry for <br class="sp-only">No Content')
+    const noContentEvent = new TitleEvent({
+        html: '204 <br>Sorry for <br class="sp-only">No Content',
+    })
     const titleClickedCounter = new TitleClickedCounter([
         {
             cond: (cnt) => {
@@ -167,17 +169,17 @@ class BGImage {
 }
 
 class TitleEvent {
-    constructor(titleHTML) {
+    constructor(titleProp) {
         this.store(null)
         
-        this.titleHTML = titleHTML
+        this.titleProp = titleProp
         this.isTriggered = false
     }
 
     trigger(title) {
         this.store(title)
 
-        this.title.html(this.titleHTML)
+        this.title.html(this.titleProp.html)
         this.isTriggered = true
     }
 
