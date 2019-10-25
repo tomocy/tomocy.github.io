@@ -8,6 +8,8 @@ $(function () {
     const titleCarousel = new Carousel(new Slider(slicker))
     const noContentEvent = new TitleEvent({
         html: '204 <br>Sorry for <br class="sp-only">No Content',
+    }, {
+        classNames: ['img-204'],
     })
     const titleClickedCounter = new TitleClickedCounter([
         {
@@ -15,7 +17,7 @@ $(function () {
                 return cnt % 5 == 0
             },
             run: () => {
-                noContentEvent.trigger(titleCarousel.current())
+                noContentEvent.trigger(titleCarousel.current(), bgImg.target())
             },
         },
     ])
@@ -169,34 +171,43 @@ class BGImage {
 }
 
 class TitleEvent {
-    constructor(titleProp) {
-        this.store(null)
+    constructor(titleProp, imgProp) {
+        this.drop()
         
         this.titleProp = titleProp
+        this.imgProp = imgProp
         this.isTriggered = false
     }
 
-    trigger(title) {
-        this.store(title)
+    trigger(title, img) {
+        this.store(title, img)
 
         this.title.html(this.titleProp.html)
+        for (const imgClassName of this.imgProp.classNames) {
+            this.img.addClass(imgClassName)
+        }
         this.isTriggered = true
     }
 
     restore() {
         this.title.html(this.originalTitle.html())
+        for (const imgClassName of this.imgProp.classNames) {
+            this.img.removeClass(imgClassName)
+        }
         this.isTriggered = false
 
         this.drop()
     }
 
     drop() {
-        this.store(null)
+        this.store(null, null)
     }
 
-    store(title) {
+    store(title, img) {
         this.title = title
         this.originalTitle = (title != null) ? title.clone() : null
+        this.img = img
+        this.originalImg = (img != null) ? img.clone() : null
     }
 }
 

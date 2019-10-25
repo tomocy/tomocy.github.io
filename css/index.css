@@ -29,6 +29,10 @@ body {
   background-image: url('/image/tomocy_vertical.jpg');
 }
 
+.img-204 {
+  background-image: url('/image/204.jpg');
+}
+
 .overlay {
   width: 100%;
   height: 100%;
