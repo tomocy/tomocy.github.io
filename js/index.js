@@ -1,13 +1,22 @@
 $(function () {
     const bgImg = new BGImage('#img')
-    const titleCarousel = new Carousel(new Slider(new Slicker('#title-container', '.title', {
+    const slicker = new Slicker('#title-container', '.title', {
         arrows: false,
         autoplay: true,
         vertical: true,
-    })))
-
-    let titleClickedCnt = 0
+    })
+    const titleCarousel = new Carousel(new Slider(slicker))
     const noContentEvent = new NoContentEvent()
+    const titleClickedCounter = new TitleClickedCounter([
+        {
+            cond: (cnt) => {
+                return cnt % 5 == 0
+            },
+            run: () => {
+                noContentEvent.trigger(titleCarousel.current())
+            },
+        },
+    ])
 
     titleCarousel.beforeChange(() => {
         if (noContentEvent.isTriggered) {
@@ -15,11 +24,9 @@ $(function () {
         }
     })
     titleCarousel.onClick(() => {
-        titleClickedCnt++
+        titleClickedCounter.countUp()
         titleCarousel.slideNext()
-        if (titleClickedCnt % 5 == 0) {
-            noContentEvent.trigger(titleCarousel.current())
-        }
+        titleClickedCounter.trigger()
     })
     $(document).ready(() => {
         bgImg.decide()
@@ -186,5 +193,28 @@ class NoContentEvent {
     store(title) {
         this.title = title
         this.originalTitle = (title != null) ? title.clone() : null
+    }
+}
+
+class TitleClickedCounter {
+    constructor(fns) {
+        this.cnt = 0
+        this.fns = fns
+    }
+
+    countUp() {
+        this.cnt++
+    }
+
+    countDown() {
+        this.cnt--
+    }
+
+    trigger() {
+        for (const fn of this.fns) {
+            if (fn.cond(this.cnt)) {
+                fn.run()
+            }
+        }
     }
 }
